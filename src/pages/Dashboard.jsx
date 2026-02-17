@@ -1,5 +1,14 @@
+import { useAuth } from "../context/AuthContext";
+import AdminDashboard from "./AdminDashboard";
+import EstudianteDashboard from "./EstudianteDashboard";
+import DocenteDashboard from "./DocenteDashboard";
+
 export default function Dashboard() {
-  return (
-    <h1 className="text-3xl font-bold">Dashboard</h1>
-  );
+  const { role } = useAuth();
+
+  if (role === "admin") return <AdminDashboard />;
+  if (role === "estudiante") return <EstudianteDashboard />;
+  if (role === "docente") return <DocenteDashboard />;
+
+  return <h1>No autorizado</h1>;
 }
