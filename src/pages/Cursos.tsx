@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCursos } from "../context/CursosContext";
+import { useCursos } from "../context/CursosContext.tsx";
 
 export default function Cursos() {
   const { cursos, setCursos } = useCursos();

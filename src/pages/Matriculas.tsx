@@ -1,7 +1,8 @@
-import { useAuth } from "../context/AuthContext";
+import {useAppSelector} from "../store/hooks.ts";
 
 function Matriculas() {
-  const { role } = useAuth();
+  const { roles } = useAppSelector(state => state.authentication.userData)
+  const isStudent = roles.includes("Student");
 
   const fechaActual = new Date().toLocaleDateString();
 
@@ -24,7 +25,7 @@ function Matriculas() {
     },
   ];
 
-  if (role !== "estudiante") {
+  if (isStudent) {
     return (
       <div className="p-6">
         <h2 className="text-xl font-bold text-red-500">

@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 import {
   FaTachometerAlt,
@@ -9,11 +8,17 @@ import {
   FaClipboardList,
   FaSignOutAlt,
 } from "react-icons/fa";
+import {useAppDispatch, useAppSelector} from "../store/hooks.ts";
+import {setIsAuthenticated} from "../store/slices/authSlice.ts";
 
 function Sidebar() {
-  const { role, logout } = useAuth();
+    const { roles } = useAppSelector(state => state.authentication.userData)
+    const isStudent = roles.includes("Student");
+    const isAdmin = roles.includes("Admin");
+    const isTeacher = roles.includes("Teacher");
+    const dispatch = useAppDispatch();
 
-  return (
+    return (
     <div className="w-64 h-screen bg-blue-800 text-white p-5 flex flex-col">
 
       <h2 className="text-xl font-bold mb-6 text-center">
@@ -21,11 +26,11 @@ function Sidebar() {
       </h2>
 
       <p className="mb-4 text-sm text-gray-400">
-        Rol: <span className="font-semibold text-white">{role}</span>
+        Rol: <span className="font-semibold text-white">{roles?.[0]}</span>
       </p>
 
       {/* ADMIN */}
-      {role === "admin" && (
+      {isAdmin && (
         <>
           <Link to="/" className="flex items-center gap-2 mb-3 hover:text-blue-300">
             <FaTachometerAlt /> Dashboard
@@ -50,7 +55,7 @@ function Sidebar() {
       )}
 
       {/* DOCENTE */}
-      {role === "docente" && (
+      {isTeacher && (
         <>
           <Link to="/" className="flex items-center gap-2 mb-3 hover:text-blue-300">
             <FaTachometerAlt /> Dashboard
@@ -63,7 +68,7 @@ function Sidebar() {
       )}
 
       {/* ESTUDIANTE */}
-      {role === "estudiante" && (
+      {isStudent && (
         <>
           <Link to="/" className="flex items-center gap-2 mb-3 hover:text-blue-300">
             <FaTachometerAlt /> Dashboard
@@ -80,7 +85,9 @@ function Sidebar() {
       )}
 
       <button
-        onClick={logout}
+        onClick={() => {
+            dispatch(setIsAuthenticated(false));
+        }}
         className="flex items-center justify-center gap-2 mt-auto bg-red-500 hover:bg-red-600 p-2 rounded"
       >
         <FaSignOutAlt /> Cerrar Sesión
