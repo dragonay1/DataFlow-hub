@@ -1,29 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
-import {
-  FaTachometerAlt,
-  FaUsers,
-  FaChalkboardTeacher,
-  FaBook,
-  FaClipboardList,
-  FaSignOutAlt,
-} from "react-icons/fa";
-import {useAppDispatch, useAppSelector} from "../store/hooks.ts";
-import {setIsAuthenticated} from "../store/slices/authSlice.ts";
+import { FaTachometerAlt, FaUsers, FaChalkboardTeacher, FaBook, FaClipboardList, FaSignOutAlt } from 'react-icons/fa';
+import { useAppDispatch, useAppSelector } from '../store/hooks.ts';
+import { setIsAuthenticated } from '../store/slices/authSlice.ts';
 
 function Sidebar() {
-    const { roles } = useAppSelector(state => state.authentication.userData)
-    const isStudent = roles.includes("Student");
-    const isAdmin = roles.includes("Admin");
-    const isTeacher = roles.includes("Teacher");
-    const dispatch = useAppDispatch();
+  const { roles } = useAppSelector(state => state.authentication.userData);
+  const isStudent = roles.includes('Student');
+  const isAdmin = roles.includes('Admin');
+  const isTeacher = roles.includes('Teacher');
+  const dispatch = useAppDispatch();
 
-    return (
+  return (
     <div className="w-64 h-screen bg-blue-800 text-white p-5 flex flex-col">
-
-      <h2 className="text-xl font-bold mb-6 text-center">
-        DataFlow Hub
-      </h2>
+      <h2 className="text-xl font-bold mb-6 text-center">DataFlow Hub</h2>
 
       <p className="mb-4 text-sm text-gray-400">
         Rol: <span className="font-semibold text-white">{roles?.[0]}</span>
@@ -86,7 +76,7 @@ function Sidebar() {
 
       <button
         onClick={() => {
-            dispatch(setIsAuthenticated(false));
+          dispatch(setIsAuthenticated(false));
         }}
         className="flex items-center justify-center gap-2 mt-auto bg-red-500 hover:bg-red-600 p-2 rounded"
       >

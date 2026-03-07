@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
@@ -7,18 +7,18 @@ export const AuthProvider = ({ children }) => {
 
   const login = (username, password) => {
     // Usuarios simulados
-    if (username === "admin" && password === "123") {
-      setRole("admin");
+    if (username === 'admin' && password === '123') {
+      setRole('admin');
       return true;
     }
 
-    if (username === "docente" && password === "123") {
-      setRole("docente");
+    if (username === 'docente' && password === '123') {
+      setRole('docente');
       return true;
     }
 
-    if (username === "estudiante" && password === "123") {
-      setRole("estudiante");
+    if (username === 'estudiante' && password === '123') {
+      setRole('estudiante');
       return true;
     }
 
@@ -29,11 +29,7 @@ export const AuthProvider = ({ children }) => {
     setRole(null);
   };
 
-  return (
-    <AuthContext.Provider value={{ role, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ role, login, logout }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);
