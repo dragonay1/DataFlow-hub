@@ -1,8 +1,9 @@
 import { useAppSelector } from '../store/hooks.ts';
+import { hasRole } from '../shared/utils/roles.ts';
 
 function Matriculas() {
   const { roles } = useAppSelector(state => state.authentication.userData);
-  const isStudent = roles.includes('Student');
+  const isStudent = hasRole(roles, 'student');
 
   const fechaActual = new Date().toLocaleDateString();
 

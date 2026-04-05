@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:5285/api';
+
 export const authenticationService = createApi({
   reducerPath: 'authenticationService',
   baseQuery: fetchBaseQuery({
-    //TODO agregar variable de entorno
-    baseUrl: 'http://localhost:5285/api',
+    baseUrl: apiBaseUrl,
     prepareHeaders: headers => {
       headers.set('Accept', '*/*');
       headers.set('Content-Type', 'application/json');

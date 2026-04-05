@@ -1,7 +1,7 @@
-import Sidebar from './Sidebar';
-import Navbar from './Navbar';
+import Sidebar from './sidebar';
+import Navbar from './navbar';
 
-export default function Layout({ children }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex">
       <Sidebar />

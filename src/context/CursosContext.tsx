@@ -1,8 +1,20 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
-const CursosContext = createContext();
+interface Curso {
+  id: number;
+  nombre: string;
+  profesor: string;
+  aula: string;
+}
 
-export function CursosProvider({ children }) {
+interface CursosContextValue {
+  cursos: Curso[];
+  setCursos: React.Dispatch<React.SetStateAction<Curso[]>>;
+}
+
+const CursosContext = createContext<CursosContextValue | undefined>(undefined);
+
+export function CursosProvider({ children }: { children: ReactNode }) {
   const [cursos, setCursos] = useState([
     {
       id: 1,
@@ -34,5 +46,11 @@ export function CursosProvider({ children }) {
 }
 
 export function useCursos() {
-  return useContext(CursosContext);
+  const context = useContext(CursosContext);
+
+  if (!context) {
+    throw new Error('useCursos must be used within a CursosProvider');
+  }
+
+  return context;
 }

@@ -1,10 +1,11 @@
 import { useAppSelector } from '../store/hooks.ts';
+import { getPrimaryRoleLabel, hasRole } from '../shared/utils/roles.ts';
 
 export default function Navbar() {
   const { roles } = useAppSelector(state => state.authentication.userData);
-  const isStudent = roles.includes('Student');
-  const isAdmin = roles.includes('Admin');
-  const isTeacher = roles.includes('Teacher');
+  const isStudent = hasRole(roles, 'student');
+  const isAdmin = hasRole(roles, 'admin');
+  const isTeacher = hasRole(roles, 'teacher');
 
   const getTitle = () => {
     if (isAdmin) return 'Panel Administrativo';
@@ -17,7 +18,7 @@ export default function Navbar() {
     <div className="bg-purple-800 shadow p-4 flex justify-between items-center">
       <h1 className="text-white font-semibold">{getTitle()}</h1>
 
-      <span className="capitalize text-white font-medium">{roles?.[0]}</span>
+      <span className="capitalize text-white font-medium">{getPrimaryRoleLabel(roles)}</span>
     </div>
   );
 }

@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom';
 
-import { FaTachometerAlt, FaUsers, FaChalkboardTeacher, FaBook, FaClipboardList, FaSignOutAlt } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaChalkboardTeacher, FaBook, FaClipboardList, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useAppDispatch, useAppSelector } from '../store/hooks.ts';
 import { setIsAuthenticated } from '../store/slices/authSlice.ts';
+import { getPrimaryRoleLabel, hasRole } from '../shared/utils/roles.ts';
 
 function Sidebar() {
   const { roles } = useAppSelector(state => state.authentication.userData);
-  const isStudent = roles.includes('Student');
-  const isAdmin = roles.includes('Admin');
-  const isTeacher = roles.includes('Teacher');
+  const isStudent = hasRole(roles, 'student');
+  const isAdmin = hasRole(roles, 'admin');
+  const isTeacher = hasRole(roles, 'teacher');
   const dispatch = useAppDispatch();
 
   return (
@@ -16,7 +17,7 @@ function Sidebar() {
       <h2 className="text-xl font-bold mb-6 text-center">DataFlow Hub</h2>
 
       <p className="mb-4 text-sm text-gray-400">
-        Rol: <span className="font-semibold text-white">{roles?.[0]}</span>
+        Rol: <span className="font-semibold text-white">{getPrimaryRoleLabel(roles)}</span>
       </p>
 
       {/* ADMIN */}
@@ -51,6 +52,10 @@ function Sidebar() {
             <FaTachometerAlt /> Dashboard
           </Link>
 
+          <Link to="/docentes" className="flex items-center gap-2 mb-3 hover:text-blue-300">
+            <FaChalkboardTeacher /> Mi Perfil
+          </Link>
+
           <Link to="/cursos" className="flex items-center gap-2 mb-3 hover:text-blue-300">
             <FaBook /> Cursos
           </Link>
@@ -62,6 +67,10 @@ function Sidebar() {
         <>
           <Link to="/" className="flex items-center gap-2 mb-3 hover:text-blue-300">
             <FaTachometerAlt /> Dashboard
+          </Link>
+
+          <Link to="/perfil-estudiante" className="flex items-center gap-2 mb-3 hover:text-blue-300">
+            <FaUser /> Mi Perfil
           </Link>
 
           <Link to="/cursos-disponibles" className="flex items-center gap-2 mb-3 hover:text-blue-300">

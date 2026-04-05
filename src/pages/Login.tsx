@@ -1,18 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Box, TextField, Typography, InputAdornment, Button } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import { useFormik } from 'formik';
 import type { LoginValues } from '../components/login/types/loginValues.ts';
 import { loginSchema } from '../components/login/utils/login.schema.ts';
-import { usePostLoginMutation } from '../shared/services/authentication.service.ts';
 import { useDispatch } from 'react-redux';
 import { setIsAuthenticated, setUserData } from '../store/slices/authSlice.ts';
+import { authenticateLocalUser } from '../shared/mocks/auth.mock.ts';
+import { useEstudiantes } from '../context/EstudiantesContext.tsx';
+import { useDocentes } from '../context/DocentesContext.tsx';
 
 function Login() {
-  const [login, { data, isSuccess, isError, error: loginError }] = usePostLoginMutation();
-
   const dispatch = useDispatch();
+  const { authenticateEstudiante } = useEstudiantes();
+  const { authenticateDocente } = useDocentes();
 
   const initialValues = useMemo(
     () => ({
@@ -29,39 +31,33 @@ function Login() {
     validateOnBlur: true,
     enableReinitialize: true,
     onSubmit: async values => {
-      console.log(values);
+      const user =
+        authenticateEstudiante(values.username, values.password) ??
+        authenticateDocente(values.username, values.password) ??
+        authenticateLocalUser(values.username, values.password);
 
-      await login({
-        email: values.username,
-        password: values.password,
-      });
+      if (!user) {
+        setError('Credenciales invalidas. Usa admin/123 o las credenciales asignadas por administración.');
+        dispatch(setIsAuthenticated(false));
+        return;
+      }
+
+      dispatch(setUserData(user));
+      dispatch(setIsAuthenticated(true));
+      setError('');
     },
   });
 
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (isError && loginError) {
-      if ('data' in loginError && 'message' in loginError.data && typeof loginError.data.message === 'string') {
-        setError(loginError?.data?.message?.toString());
-      }
-    }
-    dispatch(setIsAuthenticated(false));
-  }, [isError, error]);
-
-  useEffect(() => {
-    if (isSuccess && data) {
-      console.log('data', data);
-      dispatch(setUserData(data.data));
-      dispatch(setIsAuthenticated(true));
-    }
-  }, [isSuccess, data]);
 
   return (
     <Box className="flex items-center justify-center h-screen bg-gray-100">
       <Box className="bg-white p-6 rounded shadow-md w-80">
         <Typography className="text-xl font-bold mb-4 text-center">Iniciar Sesión</Typography>
         {error && <Typography className="text-red-500 text-sm mb-2">{error}</Typography>}
+        <Typography className="text-amber-700 text-xs mb-2">
+          Modo local activo. Usuario base: admin/123. Docentes y estudiantes: usuario y clave generados en administración.
+        </Typography>
 
         <Box className="flex flex-col mb-3">
           <TextField

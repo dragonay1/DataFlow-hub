@@ -1,11 +1,19 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
-const AuthContext = createContext();
+type AuthRole = 'admin' | 'docente' | 'estudiante' | null;
 
-export const AuthProvider = ({ children }) => {
-  const [role, setRole] = useState(null);
+interface AuthContextValue {
+  role: AuthRole;
+  login: (username: string, password: string) => boolean;
+  logout: () => void;
+}
 
-  const login = (username, password) => {
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [role, setRole] = useState<AuthRole>(null);
+
+  const login = (username: string, password: string) => {
     // Usuarios simulados
     if (username === 'admin' && password === '123') {
       setRole('admin');
@@ -32,4 +40,12 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={{ role, login, logout }}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+
+  return context;
+};

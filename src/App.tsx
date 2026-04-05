@@ -8,34 +8,45 @@ import CursosDisponibles from './pages/CursosDisponibles';
 import Layout from './components/layout.tsx';
 import { useAppSelector } from './store/hooks.ts';
 import Dashboard from './pages/Dashboard.tsx';
+import PerfilEstudiante from './pages/PerfilEstudiante.tsx';
+import { hasRole } from './shared/utils/roles.ts';
 
 function App() {
-  const { isAuthenticated } = useAppSelector(state => state.authentication);
+  const { isAuthenticated, userData } = useAppSelector(state => state.authentication);
+  const isStudent = hasRole(userData.roles, 'student');
+  const mustChangePassword = isStudent && userData.mustChangePassword;
+
+  if (!isAuthenticated) {
+    return (
+      <Router>
+        <Routes>
+          <Route path="*" element={<Login />} />
+        </Routes>
+      </Router>
+    );
+  }
 
   return (
     <Router>
-      <Routes>
-        {!isAuthenticated && <Route path="*" element={<Login />} />}
-
-        {isAuthenticated && (
+      <Layout>
+        <Routes>
+          <Route path="/perfil-estudiante" element={<PerfilEstudiante />} />
+          <Route path="/cambiar-contrasena" element={<Navigate to="/perfil-estudiante" />} />
+          <Route path="/" element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <Dashboard />} />
           <Route
-            path="*"
-            element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/estudiantes" element={<Estudiantes />} />
-                  <Route path="/docentes" element={<Docentes />} />
-                  <Route path="/cursos" element={<Cursos />} />
-                  <Route path="/cursos-disponibles" element={<CursosDisponibles />} />
-                  <Route path="/matriculas" element={<Matriculas />} />
-                  <Route path="*" element={<Navigate to="/" />} />
-                </Routes>
-              </Layout>
-            }
+            path="/estudiantes"
+            element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <Estudiantes />}
           />
-        )}
-      </Routes>
+          <Route path="/docentes" element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <Docentes />} />
+          <Route path="/cursos" element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <Cursos />} />
+          <Route
+            path="/cursos-disponibles"
+            element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <CursosDisponibles />}
+          />
+          <Route path="/matriculas" element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <Matriculas />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 }

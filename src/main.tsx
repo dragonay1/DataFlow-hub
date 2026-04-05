@@ -2,6 +2,8 @@ import React from 'react';
 import App from './App';
 import './App.css';
 import { CursosProvider } from './context/CursosContext';
+import { DocentesProvider } from './context/DocentesContext';
+import { EstudiantesProvider } from './context/EstudiantesContext';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { setupStore } from './store';
@@ -17,9 +19,13 @@ createRoot(document.getElementById('root')!).render(
       <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
       <CssBaseline />
       <CursosProvider>
-        <Provider store={store}>
-          <App />
-        </Provider>
+        <EstudiantesProvider>
+          <DocentesProvider>
+            <Provider store={store}>
+              <App />
+            </Provider>
+          </DocentesProvider>
+        </EstudiantesProvider>
       </CursosProvider>
     </StyledEngineProvider>
   </React.StrictMode>,
