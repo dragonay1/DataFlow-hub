@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 export interface Docente {
   id: number;
@@ -40,6 +40,7 @@ interface DocentesContextValue {
 }
 
 const DocentesContext = createContext<DocentesContextValue | undefined>(undefined);
+const STORAGE_KEY = 'dataflowhub_docentes';
 
 const normalize = (value: string) => value.trim().toLowerCase();
 
@@ -61,8 +62,29 @@ const initialDocentes: Docente[] = [
   },
 ];
 
+const loadDocentes = (): Docente[] => {
+  if (typeof window === 'undefined') return initialDocentes;
+
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (!stored) return initialDocentes;
+
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed)) return initialDocentes;
+
+    return parsed as Docente[];
+  } catch {
+    return initialDocentes;
+  }
+};
+
 export function DocentesProvider({ children }: { children: ReactNode }) {
-  const [docentes, setDocentes] = useState<Docente[]>(initialDocentes);
+  const [docentes, setDocentes] = useState<Docente[]>(loadDocentes);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(docentes));
+  }, [docentes]);
 
   const addDocente = (docente: NewDocenteInput) => {
     const username = docente.username.trim();
@@ -145,7 +167,9 @@ export function DocentesProvider({ children }: { children: ReactNode }) {
   const authenticateDocente = (username: string, password: string) => {
     const normalizedUsername = normalize(username);
     const matchedTeacher = docentes.find(
-      teacher => normalize(teacher.username) === normalizedUsername && teacher.password === password,
+      teacher =>
+        (normalize(teacher.username) === normalizedUsername || normalize(teacher.email) === normalizedUsername) &&
+        teacher.password === password,
     );
 
     if (!matchedTeacher) return null;

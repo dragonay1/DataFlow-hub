@@ -1,4 +1,11 @@
+import type { ReactNode } from 'react';
 import { FaBook, FaClipboardList } from 'react-icons/fa';
+
+type CardProps = {
+  icon: ReactNode;
+  title: string;
+  value: string;
+};
 
 function Dashboard() {
   return (
@@ -18,7 +25,7 @@ function Dashboard() {
   );
 }
 
-function Card({ icon, title, value }) {
+function Card({ icon, title, value }: CardProps) {
   return (
     <div className="bg-white shadow-md rounded-lg p-5 flex items-center gap-4 border">
       <div className="text-blue-600 text-3xl">{icon}</div>

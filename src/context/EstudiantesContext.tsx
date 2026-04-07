@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 export interface Estudiante {
   id: number;
@@ -39,6 +39,7 @@ interface EstudiantesContextValue {
 }
 
 const EstudiantesContext = createContext<EstudiantesContextValue | undefined>(undefined);
+const STORAGE_KEY = 'dataflowhub_estudiantes';
 
 const normalize = (value: string) => value.trim().toLowerCase();
 
@@ -60,8 +61,29 @@ const initialStudents: Estudiante[] = [
   },
 ];
 
+const loadStudents = (): Estudiante[] => {
+  if (typeof window === 'undefined') return initialStudents;
+
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (!stored) return initialStudents;
+
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed)) return initialStudents;
+
+    return parsed as Estudiante[];
+  } catch {
+    return initialStudents;
+  }
+};
+
 export function EstudiantesProvider({ children }: { children: ReactNode }) {
-  const [estudiantes, setEstudiantes] = useState<Estudiante[]>(initialStudents);
+  const [estudiantes, setEstudiantes] = useState<Estudiante[]>(loadStudents);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(estudiantes));
+  }, [estudiantes]);
 
   const addEstudiante = (input: NewEstudianteInput) => {
     const username = input.username.trim();
@@ -139,7 +161,9 @@ export function EstudiantesProvider({ children }: { children: ReactNode }) {
   const authenticateEstudiante = (username: string, password: string) => {
     const normalizedUsername = normalize(username);
     const matchedStudent = estudiantes.find(
-      student => normalize(student.username) === normalizedUsername && student.password === password,
+      student =>
+        (normalize(student.username) === normalizedUsername || normalize(student.email) === normalizedUsername) &&
+        student.password === password,
     );
 
     if (!matchedStudent) return null;

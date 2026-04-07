@@ -1,9 +1,16 @@
 import { useState } from 'react';
 
-export default function CursosDisponibles() {
-  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
+type Curso = {
+  id: number;
+  nombre: string;
+  profesor: string;
+  aula: string;
+};
 
-  const cursos = [
+export default function CursosDisponibles() {
+  const [cursoSeleccionado, setCursoSeleccionado] = useState<Curso | null>(null);
+
+  const cursos: Curso[] = [
     { id: 1, nombre: 'Programación Web', profesor: 'Ing. Pérez', aula: 'A1' },
     { id: 2, nombre: 'Base de Datos', profesor: 'Ing. Gómez', aula: 'B2' },
     { id: 3, nombre: 'Redes', profesor: 'Ing. Torres', aula: 'C3' },
