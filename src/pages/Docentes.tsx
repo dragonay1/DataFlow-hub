@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useCursos } from '../context/CursosContext.tsx';
 import { useDocentes } from '../context/DocentesContext.tsx';
-import { useAppSelector } from '../store/hooks.ts';
+import { setMustChangePassword } from '../store/slices/authSlice.ts';
+import { useAppDispatch, useAppSelector } from '../store/hooks.ts';
 import { hasRole } from '../shared/utils/roles.ts';
 
 type DocenteFormState = {
@@ -21,10 +22,10 @@ const emptyForm: DocenteFormState = {
 };
 
 export default function Docentes() {
+  const dispatch = useAppDispatch();
   const { cursos } = useCursos();
-  const { docentes, addDocente, updateDocente, deleteDocente, getDocenteByEmail } = useDocentes();
-  const userEmail = useAppSelector(state => state.authentication.userData.email);
-  const roles = useAppSelector(state => state.authentication.userData.roles);
+  const { docentes, addDocente, updateDocente, deleteDocente, getDocenteByEmail, changeDocentePassword } = useDocentes();
+  const { email: userEmail, roles, username, mustChangePassword } = useAppSelector(state => state.authentication.userData);
 
   const isAdmin = hasRole(roles, 'admin');
   const isTeacher = hasRole(roles, 'teacher');
@@ -33,6 +34,10 @@ export default function Docentes() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [latestCredentials, setLatestCredentials] = useState<{ username: string; temporaryPassword: string } | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [profileError, setProfileError] = useState('');
+  const [profileSuccess, setProfileSuccess] = useState('');
 
   const availableClasses = useMemo(
     () =>
@@ -143,13 +148,45 @@ export default function Docentes() {
   if (isTeacher && !isAdmin) {
     const docente = getDocenteByEmail(userEmail);
 
+    const handleSavePassword = () => {
+      if (newPassword.length < 6) {
+        setProfileError('La nueva contrasena debe tener al menos 6 caracteres.');
+        setProfileSuccess('');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        setProfileError('Las contrasenas no coinciden.');
+        setProfileSuccess('');
+        return;
+      }
+
+      const updated = changeDocentePassword(userEmail, newPassword);
+
+      if (!updated) {
+        setProfileError('No se pudo actualizar la contrasena del docente.');
+        setProfileSuccess('');
+        return;
+      }
+
+      dispatch(setMustChangePassword(false));
+      setProfileError('');
+      setProfileSuccess('Contrasena actualizada correctamente.');
+      setNewPassword('');
+      setConfirmPassword('');
+    };
+
     return (
       <div>
         <h1 className="text-2xl font-bold mb-6">Mi Perfil Docente</h1>
 
-        <div className="bg-white p-6 rounded shadow">
+        <div className="bg-white p-6 rounded shadow mb-6">
           <p className="font-semibold mb-2">{docente?.nombre ?? 'Docente sin registro administrativo'}</p>
-          <p className="text-gray-600 mb-4">Correo: {userEmail || 'Sin correo en sesión'}</p>
+          <p className="text-gray-600 mb-1">Correo: {userEmail || 'Sin correo en sesion'}</p>
+          <p className="text-gray-600 mb-1">Usuario: {username || 'Sin usuario'}</p>
+          <p className="text-gray-600 mb-4">
+            Estado de contrasena: {mustChangePassword ? 'Pendiente de cambio' : 'Actualizada'}
+          </p>
 
           <h2 className="font-semibold mb-2">Clases asignadas</h2>
           {docente && docente.clases.length > 0 ? (
@@ -161,6 +198,38 @@ export default function Docentes() {
           ) : (
             <p className="text-gray-500">No tienes clases asignadas aún.</p>
           )}
+        </div>
+
+        <div className="bg-white p-6 rounded shadow max-w-2xl">
+          <h2 className="font-semibold mb-2">Cambiar contrasena</h2>
+          <p className="text-gray-600 mb-4">
+            {mustChangePassword
+              ? 'Debes cambiar tu contrasena temporal para continuar.'
+              : 'Puedes cambiar tu contrasena cuando lo necesites.'}
+          </p>
+
+          {profileError && <p className="text-red-500 mb-3">{profileError}</p>}
+          {profileSuccess && <p className="text-green-600 mb-3">{profileSuccess}</p>}
+
+          <input
+            type="password"
+            placeholder="Nueva contrasena"
+            value={newPassword}
+            onChange={event => setNewPassword(event.target.value)}
+            className="border p-2 mb-3 w-full"
+          />
+
+          <input
+            type="password"
+            placeholder="Confirmar contrasena"
+            value={confirmPassword}
+            onChange={event => setConfirmPassword(event.target.value)}
+            className="border p-2 mb-4 w-full"
+          />
+
+          <button onClick={handleSavePassword} className="bg-blue-600 text-white px-4 py-2 rounded">
+            Guardar nueva contrasena
+          </button>
         </div>
       </div>
     );

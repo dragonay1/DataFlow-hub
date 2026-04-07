@@ -36,6 +36,7 @@ interface DocentesContextValue {
   regenerateDocentePassword: (id: number) => { username: string; temporaryPassword: string } | null;
   getDocenteByEmail: (email: string) => Docente | undefined;
   authenticateDocente: (username: string, password: string) => AuthenticatedTeacher | null;
+  changeDocentePassword: (email: string, newPassword: string) => boolean;
 }
 
 const DocentesContext = createContext<DocentesContextValue | undefined>(undefined);
@@ -160,6 +161,28 @@ export function DocentesProvider({ children }: { children: ReactNode }) {
     };
   };
 
+  const changeDocentePassword = (email: string, newPassword: string) => {
+    const normalizedEmail = normalize(email);
+    let changed = false;
+
+    setDocentes(prev =>
+      prev.map(teacher => {
+        if (normalize(teacher.email) !== normalizedEmail) {
+          return teacher;
+        }
+
+        changed = true;
+        return {
+          ...teacher,
+          password: newPassword,
+          mustChangePassword: false,
+        };
+      }),
+    );
+
+    return changed;
+  };
+
   const value = useMemo(
     () => ({
       docentes,
@@ -169,6 +192,7 @@ export function DocentesProvider({ children }: { children: ReactNode }) {
       regenerateDocentePassword,
       getDocenteByEmail,
       authenticateDocente,
+      changeDocentePassword,
     }),
     [docentes],
   );

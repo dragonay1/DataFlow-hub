@@ -1,6 +1,14 @@
 import { Link } from 'react-router-dom';
 
-import { FaTachometerAlt, FaUsers, FaChalkboardTeacher, FaBook, FaClipboardList, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import {
+  FaTachometerAlt,
+  FaUsers,
+  FaChalkboardTeacher,
+  FaBook,
+  FaClipboardList,
+  FaSignOutAlt,
+  FaUser,
+} from 'react-icons/fa';
 import { useAppDispatch, useAppSelector } from '../store/hooks.ts';
 import { setIsAuthenticated } from '../store/slices/authSlice.ts';
 import { getPrimaryRoleLabel, hasRole } from '../shared/utils/roles.ts';
@@ -13,10 +21,10 @@ function Sidebar() {
   const dispatch = useAppDispatch();
 
   return (
-    <div className="w-64 h-screen bg-blue-800 text-white p-5 flex flex-col">
+    <aside className="w-64 min-h-screen shrink-0 bg-blue-800 text-white p-5 flex flex-col sticky top-0 overflow-y-auto">
       <h2 className="text-xl font-bold mb-6 text-center">DataFlow Hub</h2>
 
-      <p className="mb-4 text-sm text-gray-400">
+      <p className="mb-4 text-sm text-blue-100/80">
         Rol: <span className="font-semibold text-white">{getPrimaryRoleLabel(roles)}</span>
       </p>
 
@@ -56,8 +64,8 @@ function Sidebar() {
             <FaChalkboardTeacher /> Mi Perfil
           </Link>
 
-          <Link to="/cursos" className="flex items-center gap-2 mb-3 hover:text-blue-300">
-            <FaBook /> Cursos
+          <Link to="/estudiantes-docente" className="flex items-center gap-2 mb-3 hover:text-blue-300">
+            <FaUsers /> Estudiantes
           </Link>
         </>
       )}
@@ -91,7 +99,7 @@ function Sidebar() {
       >
         <FaSignOutAlt /> Cerrar Sesión
       </button>
-    </div>
+    </aside>
   );
 }
 

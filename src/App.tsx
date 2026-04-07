@@ -9,6 +9,7 @@ import Layout from './components/layout.tsx';
 import { useAppSelector } from './store/hooks.ts';
 import Dashboard from './pages/Dashboard.tsx';
 import PerfilEstudiante from './pages/PerfilEstudiante.tsx';
+import DocenteEstudiantes from './pages/DocenteEstudiantes.tsx';
 import { hasRole } from './shared/utils/roles.ts';
 
 function App() {
@@ -39,6 +40,10 @@ function App() {
           />
           <Route path="/docentes" element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <Docentes />} />
           <Route path="/cursos" element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <Cursos />} />
+          <Route
+            path="/estudiantes-docente"
+            element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <DocenteEstudiantes />}
+          />
           <Route
             path="/cursos-disponibles"
             element={mustChangePassword ? <Navigate to="/perfil-estudiante" /> : <CursosDisponibles />}

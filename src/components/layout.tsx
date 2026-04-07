@@ -3,7 +3,7 @@ import Navbar from './navbar';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex">
+    <div className="flex min-h-screen items-stretch">
       <Sidebar />
       <div className="flex-1 bg-slate-100 min-h-screen">
         <Navbar />
