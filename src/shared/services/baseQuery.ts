@@ -1,6 +1,7 @@
 import { fetchBaseQuery, type BaseQueryFn, type FetchArgs, type FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../store';
 import { setIsAuthenticated, updateTokens } from '../../store/slices/authSlice.ts';
+import type { AuthResponse } from '../../types/auth.types.ts';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:5285/api';
 
@@ -45,7 +46,8 @@ export const baseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
           );
 
           if (refreshResult.data) {
-            const payload = (refreshResult.data as any).data ?? refreshResult.data;
+            const authResponse = refreshResult.data as AuthResponse;
+            const payload = authResponse.data ?? refreshResult.data;
             api.dispatch(updateTokens({ token: payload.token, refreshToken: payload.refreshToken }));
             return true;
           }

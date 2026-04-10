@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { LoginValues, AuthResponse } from '../../types/auth.types.ts';
+import type { LoginValues, AuthResponse, RegisterValues } from '../../types/auth.types.ts';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:5285/api';
 
@@ -21,7 +21,7 @@ export const authenticationService = createApi({
         body,
       }),
     }),
-    postRegister: builder.mutation<void, any>({
+    postRegister: builder.mutation<void, RegisterValues>({
       query: body => ({
         url: '/auth/register',
         method: 'POST',

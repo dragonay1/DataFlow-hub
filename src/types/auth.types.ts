@@ -18,3 +18,11 @@ export interface UserData {
   userName: string;
   role: string;
 }
+
+export interface RegisterValues {
+  firstName: string;
+  lastName: string;
+  email: string;
+  userName: string;
+  password: string;
+}

@@ -48,6 +48,9 @@ El proyecto cliente interactúa con una API backend. Utiliza servicios en `src/s
 - **Material UI**: Priorizar para componentes complejos (tablas, diálogos, selectores).
 - **Tailwind CSS**: Utilizar para el layout, espaciado y ajustes finos de diseño directamente en el JSX.
 
+### Verificación (Build & Lint)
+- **Calidad del Código**: Luego de cada cambio se debe de verificar el build y lint del proyecto (`npm run build`, `npm run lint`) y corregir de ser necesario.
+
 ## Roles de Usuario
 - **Administrador**: Control total del sistema.
 - **Docente**: Gestión de sus cursos y estudiantes asignados.
