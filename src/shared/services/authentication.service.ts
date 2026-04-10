@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type { LoginValues, AuthResponse } from '../../types/auth.types.ts';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:5285/api';
 
@@ -13,11 +14,23 @@ export const authenticationService = createApi({
     },
   }),
   endpoints: builder => ({
-    // TODO agregar tipado
-    postLogin: builder.mutation({
+    postLogin: builder.mutation<AuthResponse, LoginValues>({
       query: body => ({
-        //http://localhost:5285/api/auth/login
         url: '/auth/login',
+        method: 'POST',
+        body,
+      }),
+    }),
+    postRegister: builder.mutation<void, any>({
+      query: body => ({
+        url: '/auth/register',
+        method: 'POST',
+        body,
+      }),
+    }),
+    refreshToken: builder.mutation<AuthResponse, { token: string; refreshToken: string }>({
+      query: body => ({
+        url: '/auth/refresh-token',
         method: 'POST',
         body,
       }),
@@ -25,4 +38,4 @@ export const authenticationService = createApi({
   }),
 });
 
-export const { usePostLoginMutation } = authenticationService;
+export const { usePostLoginMutation, usePostRegisterMutation, useRefreshTokenMutation } = authenticationService;

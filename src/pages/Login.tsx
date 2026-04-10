@@ -1,54 +1,10 @@
-import { useMemo, useState } from 'react';
 import { Box, TextField, Typography, InputAdornment, Button } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
-import { useFormik } from 'formik';
-import type { LoginValues } from '../components/login/types/loginValues.ts';
-import { loginSchema } from '../components/login/utils/login.schema.ts';
-import { useDispatch } from 'react-redux';
-import { setIsAuthenticated, setUserData } from '../store/slices/authSlice.ts';
-import { authenticateLocalUser } from '../shared/mocks/auth.mock.ts';
-import { useEstudiantes } from '../context/EstudiantesContext.tsx';
-import { useDocentes } from '../context/DocentesContext.tsx';
+import { useLoginForm } from '../hooks/useLoginForm.ts';
 
 function Login() {
-  const dispatch = useDispatch();
-  const { authenticateEstudiante } = useEstudiantes();
-  const { authenticateDocente } = useDocentes();
-
-  const initialValues = useMemo(
-    () => ({
-      username: '',
-      password: '',
-    }),
-    [],
-  );
-
-  const formik = useFormik<LoginValues>({
-    initialValues,
-    validationSchema: loginSchema,
-    validateOnChange: true,
-    validateOnBlur: true,
-    enableReinitialize: true,
-    onSubmit: async values => {
-      const user =
-        authenticateEstudiante(values.username, values.password) ??
-        authenticateDocente(values.username, values.password) ??
-        authenticateLocalUser(values.username, values.password);
-
-      if (!user) {
-        setError('Credenciales invalidas. Usa admin/123 o las credenciales asignadas por administración.');
-        dispatch(setIsAuthenticated(false));
-        return;
-      }
-
-      dispatch(setUserData(user));
-      dispatch(setIsAuthenticated(true));
-      setError('');
-    },
-  });
-
-  const [error, setError] = useState('');
+  const { formik, error } = useLoginForm();
 
   return (
     <Box className="flex items-center justify-center h-screen bg-gray-100">

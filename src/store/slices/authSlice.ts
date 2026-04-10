@@ -134,9 +134,13 @@ const authSlice = createSlice({
     setMustChangePassword: (state, action) => {
       state.userData.mustChangePassword = action.payload;
     },
+    updateTokens: (state, action: { payload: { token: string; refreshToken: string } }) => {
+      state.userData.token = action.payload.token;
+      state.userData.refreshToken = action.payload.refreshToken;
+    },
   },
 });
 
-export const { setUserData, setIsAuthenticated, setMustChangePassword } = authSlice.actions;
+export const { setUserData, setIsAuthenticated, setMustChangePassword, updateTokens } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -20,26 +20,35 @@ Administrar de manera eficiente el flujo de datos académicos, incluyendo:
   - Utilizar Tailwind CSS para el layout, espaciado y ajustes finos de diseño.
 
 ## Estructura de Directorios Principal
-- `src/components/`: Componentes reutilizables de la UI (Layout, Navbar, Sidebar) y específicos de módulos (Login).
-- `src/context/`: Contextos de React para la lógica de negocio de Estudiantes, Docentes y Cursos.
+- `src/components/`: Componentes reutilizables de la UI (Layout, Navbar, Sidebar).
+- `src/context/`: Contextos de React para la lógica de negocio de Estudiantes, Docentes y Cursos (Estado local/Context API).
+- `src/hooks/`: Hooks personalizados. Los hooks de formularios (ej. `useLoginForm.ts`) deben encapsular la lógica de Formik.
 - `src/pages/`: Vistas principales de la aplicación diferenciadas por roles (Admin, Docente, Estudiante).
-- `src/shared/`: Servicios de API, utilidades y mocks para pruebas o desarrollo sin backend.
+- `src/schemas/`: Esquemas de validación de Yup (extensión `.schema.ts`).
+- `src/shared/services/`: Servicios de API utilizando **Redux Toolkit Query** (RTK Query).
 - `src/store/`: Configuración de Redux Toolkit y slices de estado.
+- `src/types/`: Definiciones de interfaces y tipos de TypeScript centralizados.
 
 ## Integración con Backend
-El proyecto cliente interactúa con una API backend ubicada en la carpeta raíz compartida (hermana de este repositorio). Utiliza servicios en `src/shared/services/` para la comunicación.
+El proyecto cliente interactúa con una API backend. Utiliza servicios en `src/shared/services/` con un `baseQuery.ts` que inyecta automáticamente el Bearer Token y maneja la renovación de tokens (refresh-token) de forma automática ante errores 401.
 
-1 Es **obligatorio** consultar el archivo `..\DataFlowHub\DataFlowHub.Api\DataFlowHub.Api.http` del proyecto backend para obtener los endpoints disponibles, ejemplos de peticiones y estructuras de datos esperadas.
-- **Autenticación**: Utiliza JWT (Bearer Token). El flujo de login requiere `username` y `password`.
+1 Es **obligatorio** consultar el archivo `..\DataFlowHub\DataFlowHub.Api\DataFlowHub.Api.http` del proyecto backend para obtener los endpoints disponibles.
+- **Servicios**: Se deben crear servicios modulares (ej. `student.service.ts`, `academic.service.ts`) que exporten hooks generados por RTK Query.
 
+## Reglas de Desarrollo
+### Manejo de Formularios (Formik & Yup)
+- **Hooks de Formulario**: Cada formulario debe tener un hook en `src/hooks/` que use `useFormik`.
+- **Validación**: Los esquemas deben estar en `src/schemas/` y ser importados por los hooks de formulario.
+
+### Tipado (TypeScript)
+- Todas las respuestas de API y modelos de datos deben estar definidos en `src/types/entities.types.ts` o `src/types/auth.types.ts`.
+- Evitar el uso de `any`.
+
+### Estilos (Material UI & Tailwind CSS)
+- **Material UI**: Priorizar para componentes complejos (tablas, diálogos, selectores).
+- **Tailwind CSS**: Utilizar para el layout, espaciado y ajustes finos de diseño directamente en el JSX.
 
 ## Roles de Usuario
 - **Administrador**: Control total del sistema.
 - **Docente**: Gestión de sus cursos y estudiantes asignados.
 - **Estudiante**: Acceso a cursos, calificaciones y perfil personal.
-
-### Manejo de Formularios (Formik & Yup)
-Se utiliza **Formik** para el manejo del estado del formulario y **Yup** para los esquemas de validación.
-- **Esquemas de Validación**: Deben crearse en archivos independientes con extensión `.schema.ts` dentro de `src/schemas/`.
-- **Hooks de Formulario**: Se deben crear hooks independientes por cada funcionalidad en `src/hooks/` (ej. `useUserForm.ts`) que encapsulen la lógica de Formik y el uso de los esquemas.
-- **Validación Visual**: Los formularios deben mostrar mensajes de error claros y utilizar estilos visuales (ej. bordes rojos) para campos inválidos.
